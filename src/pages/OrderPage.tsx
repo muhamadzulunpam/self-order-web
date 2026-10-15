@@ -1,4 +1,3 @@
-// src/pages/OrderPage.tsx
 import { useParams } from 'react-router-dom'
 import { MenuSkeleton } from '@/features/menu/components/MenuSkeleton'
 import {
@@ -29,5 +28,5 @@ export function OrderPage() {
     return <MenuErrorState message={message} onRetry={() => menu.refetch()} />
   }
 
-  return <MenuView data={menu.data} />
+  return <MenuView token={token} data={menu.data} />
 }

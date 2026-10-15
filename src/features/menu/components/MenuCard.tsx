@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { formatRupiah } from '@/lib/format'
 import type { PublicMenu } from '@/types/menu'
 
-export function MenuCard({ menu }: { menu: PublicMenu }) {
+type Props = {
+  menu: PublicMenu
+  inCartQuantity: number
+  onAdd: () => void
+}
+
+export function MenuCard({ menu, inCartQuantity, onAdd }: Props) {
   const [imageFailed, setImageFailed] = useState(false)
   const showImage = menu.image_url !== null && !imageFailed
 
@@ -31,14 +37,32 @@ export function MenuCard({ menu }: { menu: PublicMenu }) {
           </p>
         )}
 
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className="font-semibold">{formatRupiah(menu.price)}</span>
+        <div className="mt-2 flex items-end justify-between gap-2">
+          <div className="space-y-1">
+            <p className="font-semibold">{formatRupiah(menu.price)}</p>
 
-          {menu.has_spice_level && (
-            <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs text-red-700">
-              Ada level pedas
-            </span>
-          )}
+            <div className="flex flex-wrap gap-1.5">
+              {menu.has_spice_level && (
+                <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs text-red-700">
+                  Ada level pedas
+                </span>
+              )}
+              {inCartQuantity > 0 && (
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
+                  {inCartQuantity} di keranjang
+                </span>
+              )}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onAdd}
+            aria-label={`Tambah ${menu.name}`}
+            className="shrink-0 rounded-full bg-stone-900 px-4 py-1.5 text-sm font-medium text-white active:bg-stone-700"
+          >
+            Tambah
+          </button>
         </div>
       </div>
     </li>

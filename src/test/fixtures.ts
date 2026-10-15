@@ -1,4 +1,6 @@
 import type { TableMenu } from '@/types/menu'
+import { makeLineKey } from '@/features/cart/cartLogic'
+import type { CartLine } from '@/features/cart/cartLogic'
 
 export const sampleMenu: TableMenu = {
   table: { number: 5 },
@@ -42,4 +44,20 @@ export const sampleMenu: TableMenu = {
       ],
     },
   ],
+}
+
+export function makeLine(
+  overrides: Partial<Omit<CartLine, 'key'>> = {},
+): CartLine {
+  const line: Omit<CartLine, 'key'> = {
+    menuId: 1,
+    name: 'Mie Pedas Original',
+    price: 12000,
+    quantity: 1,
+    spiceLevel: 3,
+    notes: '',
+    ...overrides,
+  }
+
+  return { ...line, key: makeLineKey(line) }
 }
