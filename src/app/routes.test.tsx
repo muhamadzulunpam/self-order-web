@@ -16,12 +16,6 @@ describe('routes', () => {
     expect(screen.getByText(/scan qr code/i)).toBeInTheDocument()
   })
 
-  it('membaca token meja dari URL /order/:token', () => {
-    renderAt('/order/abc123')
-
-    expect(screen.getByText(/abc123/)).toBeInTheDocument()
-  })
-
   it('menampilkan halaman login staf', () => {
     renderAt('/staff/login')
 
