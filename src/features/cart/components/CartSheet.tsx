@@ -10,6 +10,7 @@ type Props = {
   onChangeQuantity: (key: string, quantity: number) => void
   onRemove: (key: string) => void
   onClose: () => void
+  onCheckout: () => void
 }
 
 export function CartSheet({
@@ -17,6 +18,7 @@ export function CartSheet({
   lines,
   onChangeQuantity,
   onRemove,
+  onCheckout,
   onClose,
 }: Props) {
   return (
@@ -89,6 +91,13 @@ export function CartSheet({
           <p className="mt-1 text-xs text-stone-400">
             Total akhir dihitung ulang oleh sistem saat pesanan dibuat.
           </p>
+          <button
+            type="button"
+            onClick={onCheckout}
+            className="mt-4 w-full rounded-2xl bg-stone-900 py-3.5 font-medium text-white active:bg-stone-700"
+          >
+            Lanjut ke pembayaran
+          </button>
         </>
       )}
     </BottomSheet>
