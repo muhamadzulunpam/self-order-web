@@ -1,4 +1,3 @@
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Mock } from 'vitest'
 import { requestPayment } from '@/features/order/api'
