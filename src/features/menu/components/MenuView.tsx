@@ -9,6 +9,7 @@ import type { PublicMenu, TableMenu } from '@/types/menu'
 import { sectionId, useActiveCategory } from '../useActiveCategory'
 import { CategoryNav } from './CategoryNav'
 import { MenuCard } from './MenuCard'
+import { CheckoutSheet } from '@/features/checkout/components/CheckoutSheet'
 
 type Props = {
   token: string
@@ -29,7 +30,7 @@ export function MenuView({ token, data }: Props) {
   const dismissNotice = useCartStore((state) => state.dismissNotice)
 
   const [selectedMenu, setSelectedMenu] = useState<PublicMenu | null>(null)
-  const [cartOpen, setCartOpen] = useState(false)
+  const [view, setView] = useState<'cart' | 'checkout' | null>(null)
 
   // Samakan keranjang dengan menu terbaru (harga berubah, menu habis, dst.)
   useEffect(() => {
@@ -136,7 +137,7 @@ export function MenuView({ token, data }: Props) {
         </main>
       )}
 
-      <CartBar count={count} total={total} onOpen={() => setCartOpen(true)} />
+      <CartBar count={count} total={total} onOpen={() => setView('cart')} />
 
       {selectedMenu && (
         <AddToCartSheet
@@ -147,7 +148,7 @@ export function MenuView({ token, data }: Props) {
         />
       )}
 
-      {cartOpen && (
+      {view === 'cart' && (
         <CartSheet
           tableNumber={table.number}
           lines={lines}
@@ -155,7 +156,18 @@ export function MenuView({ token, data }: Props) {
             setQuantity(token, key, quantity)
           }
           onRemove={(key) => removeLine(token, key)}
-          onClose={() => setCartOpen(false)}
+          onCheckout={() => setView('checkout')}
+          onClose={() => setView(null)}
+        />
+      )}
+
+      {view === 'checkout' && (
+        <CheckoutSheet
+          token={token}
+          tableNumber={table.number}
+          lines={lines}
+          onBack={() => setView('cart')}
+          onClose={() => setView(null)}
         />
       )}
     </div>
