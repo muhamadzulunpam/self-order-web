@@ -5,7 +5,7 @@ import { RouterProvider, createMemoryRouter, useParams } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCartStore } from '@/features/cart/store'
 import { fetchTableMenu } from '@/features/menu/api'
-import { createOrder } from '@/features/order/api'
+import { createOrder, fetchOrder } from '@/features/order/api'
 import { startPayment } from '@/features/payment/startPayment'
 import { ApiError } from '@/lib/api'
 import { sampleMenu, sampleOrder } from '@/test/fixtures'
@@ -26,6 +26,7 @@ vi.mock('@/features/payment/startPayment', async (importOriginal) => {
 
 const mockFetchMenu = vi.mocked(fetchTableMenu)
 const mockCreate = vi.mocked(createOrder)
+const mockFetchOrder = vi.mocked(fetchOrder)
 const mockStart = vi.mocked(startPayment)
 
 function StatusStub() {
@@ -78,6 +79,10 @@ async function openCheckout(user: User) {
 beforeEach(() => {
   vi.clearAllMocks()
   mockFetchMenu.mockResolvedValue(sampleMenu)
+  mockFetchOrder.mockResolvedValue({
+    ...sampleOrder,
+    order_code: 'ORD-9',
+  })
 })
 
 describe('checkout dari halaman menu', () => {
