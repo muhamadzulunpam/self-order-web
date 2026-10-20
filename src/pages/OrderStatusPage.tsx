@@ -2,7 +2,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { spiceLabel } from '@/features/cart/cartLogic'
+import { OrderTimeline } from '@/features/order/components/OrderTimeline'
+import {
+  STATUS_HINT,
+  STATUS_STYLE,
+  isFinalStatus,
+} from '@/features/order/statusInfo'
 import { orderQueryKey, useOrder } from '@/features/order/useOrder'
+import { useOrderRealtime } from '@/features/order/useOrderRealtime'
 import {
   paymentErrorMessage,
   startPayment,
@@ -10,26 +17,6 @@ import {
 import { ApiError } from '@/lib/api'
 import { formatRupiah } from '@/lib/format'
 import { orderPath } from '@/lib/paths'
-import type { OrderStatus } from '@/types/order'
-
-const STATUS_STYLE: Record<OrderStatus, string> = {
-  pending_payment: 'bg-amber-50 text-amber-900',
-  paid: 'bg-sky-50 text-sky-900',
-  preparing: 'bg-sky-50 text-sky-900',
-  ready: 'bg-emerald-50 text-emerald-900',
-  completed: 'bg-emerald-50 text-emerald-900',
-  cancelled: 'bg-stone-100 text-stone-700',
-}
-
-const STATUS_HINT: Record<OrderStatus, string> = {
-  pending_payment: 'Selesaikan pembayaran agar pesanan diteruskan ke dapur.',
-  paid: 'Pembayaran diterima. Pesanan Anda segera diproses dapur.',
-  preparing: 'Pesanan Anda sedang dimasak.',
-  ready: 'Pesanan Anda sudah siap. Silakan tunggu diantar ke meja.',
-  completed: 'Pesanan selesai. Terima kasih!',
-  cancelled:
-    'Pesanan dibatalkan karena pembayaran gagal atau kedaluwarsa. Silakan buat pesanan baru.',
-}
 
 export function OrderStatusPage() {
   const { token = '', orderCode = '' } = useParams<{
@@ -38,7 +25,8 @@ export function OrderStatusPage() {
   }>()
   const location = useLocation()
   const queryClient = useQueryClient()
-  const order = useOrder(token, orderCode)
+  const realtime = useOrderRealtime(token, orderCode)
+  const order = useOrder(token, orderCode, realtime.connected)
 
   const [paying, setPaying] = useState(false)
   const [payError, setPayError] = useState<string | null>(
@@ -125,7 +113,10 @@ export function OrderStatusPage() {
         </p>
       </header>
 
-      <div className={`rounded-2xl p-4 ${STATUS_STYLE[data.status]}`}>
+      <div
+        role="status"
+        className={`rounded-2xl p-4 ${STATUS_STYLE[data.status]}`}
+      >
         <p className="text-lg font-bold">{data.status_label}</p>
         <p className="mt-1 text-sm">{STATUS_HINT[data.status]}</p>
       </div>
@@ -152,6 +143,33 @@ export function OrderStatusPage() {
               ? 'Lanjutkan pembayaran'
               : 'Bayar sekarang'}
         </button>
+      )}
+
+      <OrderTimeline status={data.status} />
+
+      {!isFinalStatus(data.status) && (
+        <div className="flex items-center justify-between gap-3 text-xs text-stone-500">
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden="true"
+              className={`h-2 w-2 rounded-full ${
+                realtime.connected ? 'bg-emerald-500' : 'bg-stone-300'
+              }`}
+            />
+            {realtime.connected
+              ? 'Pembaruan langsung aktif'
+              : 'Status diperiksa otomatis setiap beberapa detik'}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => order.refetch()}
+            disabled={order.isFetching}
+            className="underline disabled:opacity-40"
+          >
+            Perbarui status
+          </button>
+        </div>
       )}
 
       <section aria-label="Rincian pesanan">

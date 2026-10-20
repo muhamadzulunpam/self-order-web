@@ -17,6 +17,7 @@ import type { PublicOrder } from '@/types/order'
 import { describeCheckoutError } from '../errors'
 import type { CheckoutFailure } from '../errors'
 import { buildOrderPayload } from '../payload'
+import { useActiveOrdersStore } from '@/features/order/activeOrdersStore'
 
 type Phase = 'idle' | 'creating' | 'paying'
 
@@ -38,6 +39,7 @@ export function CheckoutSheet({
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const clearCart = useCartStore((state) => state.clear)
+  const addActiveOrder = useActiveOrdersStore((state) => state.add)
 
   const [customerName, setCustomerName] = useState('')
   const [notes, setNotes] = useState('')
@@ -111,6 +113,7 @@ export function CheckoutSheet({
       return
     }
 
+    addActiveOrder(token, order.order_code)
     // Pesanan sudah dibuat: kosongkan keranjang dan jangan pernah membuat pesanan kedua dari sini.
     setFrozenLines(snapshot)
     clearCart(token)

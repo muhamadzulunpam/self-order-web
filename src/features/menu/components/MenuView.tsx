@@ -10,6 +10,7 @@ import { sectionId, useActiveCategory } from '../useActiveCategory'
 import { CategoryNav } from './CategoryNav'
 import { MenuCard } from './MenuCard'
 import { CheckoutSheet } from '@/features/checkout/components/CheckoutSheet'
+import { ActiveOrders } from '@/features/order/components/ActiveOrders'
 
 type Props = {
   token: string
@@ -80,6 +81,8 @@ export function MenuView({ token, data }: Props) {
           />
         )}
       </header>
+
+      <ActiveOrders token={token} />
 
       {notice && notice.length > 0 && (
         <div

@@ -14,6 +14,7 @@ import type { PaymentOutcome } from '@/features/payment/startPayment'
 import { ApiError } from '@/lib/api'
 import { makeLine, sampleOrder } from '@/test/fixtures'
 import { CheckoutSheet } from './CheckoutSheet'
+import { useActiveOrdersStore } from '@/features/order/activeOrdersStore'
 
 vi.mock('@/features/order/api', () => ({
   createOrder: vi.fn(),
@@ -338,5 +339,28 @@ describe('CheckoutSheet', () => {
 
     expect(screen.getByText(/keranjang kosong/i)).toBeInTheDocument()
     expect(submitButton()).toBeDisabled()
+  })
+
+  it('menyimpan pesanan sebagai pesanan aktif meja agar bisa ditemukan lagi', async () => {
+    mockCreate.mockResolvedValue({ ...sampleOrder, order_code: 'ORD-1' })
+    payImmediately()
+    const { user } = setup()
+
+    await user.click(submitButton())
+    await screen.findByText(/halaman status/i)
+
+    expect(useActiveOrdersStore.getState().byToken.abc123?.[0].orderCode).toBe(
+      'ORD-1',
+    )
+  })
+
+  it('tidak menyimpan pesanan aktif jika pesanan gagal dibuat', async () => {
+    mockCreate.mockRejectedValue(new ApiError(500, 'x'))
+    const { user } = setup()
+
+    await user.click(submitButton())
+    await screen.findByRole('alert')
+
+    expect(useActiveOrdersStore.getState().byToken.abc123).toBeUndefined()
   })
 })
