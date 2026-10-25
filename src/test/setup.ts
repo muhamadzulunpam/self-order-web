@@ -1,9 +1,12 @@
+// src/test/setup.ts
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi } from 'vitest'
+import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
 import { useActiveOrdersStore } from '@/features/order/activeOrdersStore'
 import { getRealtime } from '@/lib/realtime'
+import { resetMockServer } from '@/test/mockServer'
 
 vi.mock('@/lib/realtime', () => ({ getRealtime: vi.fn(() => null) }))
 
@@ -15,7 +18,14 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+  resetMockServer()
   useCartStore.setState({ carts: {}, removedNotices: {} })
   useActiveOrdersStore.setState({ byToken: {} })
+  useAuthStore.setState({
+    token: null,
+    user: null,
+    status: 'anonymous',
+    endReason: null,
+  })
   localStorage.clear()
 })
