@@ -1,5 +1,6 @@
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
+import { channelAuthorizer } from './channelAuthorizer'
 import { createRealtime } from './realtimeClient'
 import type { EchoLike, RealtimeClient } from './realtimeClient'
 
@@ -24,6 +25,9 @@ export function getRealtime(): RealtimeClient | null {
     const port =
       Number(import.meta.env.VITE_REVERB_PORT) || (secure ? 443 : 8080)
 
+    // `authorizer` tidak ada di tipe opsi Echo pada semua versi, tetapi diteruskan apa adanya ke pusher-js.
+    const authOptions: object = { authorizer: channelAuthorizer }
+
     const echo = new Echo({
       broadcaster: 'reverb',
       key,
@@ -32,6 +36,7 @@ export function getRealtime(): RealtimeClient | null {
       wssPort: port,
       forceTLS: secure,
       enabledTransports: ['ws', 'wss'],
+      ...authOptions,
     })
 
     instance = createRealtime(echo as unknown as EchoLike)

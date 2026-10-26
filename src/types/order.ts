@@ -45,3 +45,26 @@ export type CreateOrderInput = {
   notes?: string
   items: OrderItemInput[]
 }
+
+export type StaffOrderItem = {
+  id: number
+  menu_name: string
+  quantity: number
+  spice_level: number | null
+  notes: string | null
+}
+
+export type StaffOrder = {
+  id: number
+  order_code: string
+  status: OrderStatus
+  status_label: string
+  next_status: OrderStatus | null
+  table_number: number
+  customer_name: string | null
+  notes: string | null
+  total_amount: number
+  items: StaffOrderItem[]
+  paid_at: string | null
+  created_at: string
+}
