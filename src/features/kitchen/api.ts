@@ -1,7 +1,7 @@
 import { api } from '@/lib/api'
 import { parseStaffOrder } from '@/lib/staffOrderParser'
 import type { StaffOrder } from '@/types/order'
-import type { KitchenTarget } from './boardLogic'
+import type { StatusTarget } from './boardLogic'
 
 const INVALID = 'Data pesanan dari server tidak valid.'
 
@@ -23,7 +23,7 @@ export async function fetchStaffOrders(): Promise<StaffOrder[]> {
 
 export async function updateOrderStatus(
   orderId: number,
-  status: KitchenTarget,
+  status: StatusTarget,
 ): Promise<StaffOrder> {
   const { data } = await api.patch<{ data?: unknown }>(
     `/staff/orders/${orderId}/status`,

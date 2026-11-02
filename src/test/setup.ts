@@ -3,7 +3,10 @@ import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi } from 'vitest'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
-import { useKitchenSoundStore } from '@/features/kitchen/soundStore'
+import {
+  useCashierSoundStore,
+  useKitchenSoundStore,
+} from '@/features/kitchen/soundStore'
 import { useActiveOrdersStore } from '@/features/order/activeOrdersStore'
 import { getRealtime } from '@/lib/realtime'
 import { resetMockServer } from '@/test/mockServer'
@@ -22,6 +25,7 @@ afterEach(() => {
   useCartStore.setState({ carts: {}, removedNotices: {} })
   useActiveOrdersStore.setState({ byToken: {} })
   useKitchenSoundStore.setState({ enabled: true })
+  useCashierSoundStore.setState({ enabled: true })
   useAuthStore.setState({
     token: null,
     user: null,

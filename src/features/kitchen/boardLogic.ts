@@ -2,7 +2,9 @@ import type { OrderStatus, StaffOrder } from '@/types/order'
 
 export const BOARD_STATUSES = ['paid', 'preparing', 'ready'] as const
 export type BoardStatus = (typeof BOARD_STATUSES)[number]
+
 export type KitchenTarget = 'preparing' | 'ready'
+export type StatusTarget = KitchenTarget | 'completed'
 
 export type ColumnDef = {
   status: BoardStatus
@@ -46,9 +48,17 @@ export function isOnBoard(status: OrderStatus): status is BoardStatus {
   return (BOARD_STATUSES as readonly OrderStatus[]).includes(status)
 }
 
-/** True jika `incoming` lebih usang daripada `existing`. */
+/** True jika incoming lebih usang daripada existing. */
 export function isStale(existing: StaffOrder, incoming: StaffOrder): boolean {
   return RANK[incoming.status] < RANK[existing.status]
+}
+
+/** True jika status baru lebih maju daripada yang terakhir terlihat (atau belum pernah terlihat). */
+export function isAdvance(
+  previous: OrderStatus | undefined,
+  next: OrderStatus,
+): boolean {
+  return previous === undefined || RANK[next] > RANK[previous]
 }
 
 export function upsertOrder(
@@ -68,7 +78,6 @@ export function upsertOrder(
   }
 
   const next = [...orders]
-
   next[index] = incoming
 
   return next
@@ -87,7 +96,7 @@ export function applyTouched(
   return touched.reduce(upsertOrder, base)
 }
 
-function arrivalTime(order: StaffOrder): number {
+export function arrivalTime(order: StaffOrder): number {
   const time = Date.parse(order.paid_at ?? order.created_at)
 
   return Number.isNaN(time) ? 0 : time
