@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { makeStaffOrder } from '@/test/fixtures'
 import {
   applyTouched,
+  arrivalTime,
   elapsedLabel,
   groupByColumn,
+  isAdvance,
   isOnBoard,
   isStale,
   upsertOrder,
@@ -180,5 +182,41 @@ describe('elapsedLabel', () => {
   it('tanggal kosong atau tidak valid menghasilkan teks kosong', () => {
     expect(elapsedLabel(null, now)).toBe('')
     expect(elapsedLabel('bukan tanggal', now)).toBe('')
+  })
+})
+describe('isAdvance', () => {
+  it('status yang belum pernah terlihat dianggap maju', () => {
+    expect(isAdvance(undefined, 'paid')).toBe(true)
+    expect(isAdvance(undefined, 'ready')).toBe(true)
+  })
+
+  it('maju hanya jika peringkatnya lebih tinggi', () => {
+    expect(isAdvance('paid', 'preparing')).toBe(true)
+    expect(isAdvance('preparing', 'ready')).toBe(true)
+    expect(isAdvance('paid', 'paid')).toBe(false)
+    expect(isAdvance('ready', 'paid')).toBe(false)
+    expect(isAdvance('ready', 'preparing')).toBe(false)
+  })
+})
+
+describe('arrivalTime', () => {
+  it('memakai paid_at, lalu created_at jika paid_at kosong', () => {
+    expect(
+      arrivalTime(
+        order(1, {
+          paid_at: '2026-10-25T10:00:00Z',
+          created_at: '2026-10-25T09:00:00Z',
+        }),
+      ),
+    ).toBe(Date.parse('2026-10-25T10:00:00Z'))
+    expect(
+      arrivalTime(
+        order(1, { paid_at: null, created_at: '2026-10-25T09:00:00Z' }),
+      ),
+    ).toBe(Date.parse('2026-10-25T09:00:00Z'))
+  })
+
+  it('bernilai 0 untuk tanggal yang tidak valid', () => {
+    expect(arrivalTime(order(1, { paid_at: 'bukan tanggal' }))).toBe(0)
   })
 })
