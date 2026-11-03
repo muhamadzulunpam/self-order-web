@@ -13,6 +13,7 @@ export type RecordedCall = {
   url: string
   authorization: string | null
   body: unknown
+  params: unknown
 }
 
 export type Handler = Reply | ((call: RecordedCall) => Reply | Promise<Reply>)
@@ -43,6 +44,7 @@ export function mockServer(routes: Record<string, Handler>) {
         typeof config.data === 'string'
           ? JSON.parse(config.data)
           : (config.data ?? null),
+      params: config.params ?? null,
     }
 
     calls.push(call)
