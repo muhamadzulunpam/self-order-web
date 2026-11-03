@@ -99,7 +99,9 @@ describe('parseMenu', () => {
 describe('parseTable', () => {
   it('mengembalikan meja yang valid dengan atau tanpa orders_count', () => {
     const table = makeAdminTable({ id: 3, orders_count: 2 })
-    const { orders_count: _unused, ...withoutCount } = table
+    const withoutCount = { ...table }
+
+    delete withoutCount.orders_count
 
     expect(parseTable(table)).toEqual(table)
     expect(parseTable(withoutCount)).toEqual(withoutCount)
