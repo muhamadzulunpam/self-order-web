@@ -12,6 +12,11 @@ import { routes } from './routes'
 function renderAt(path: string, extra: Record<string, Handler> = {}) {
   const server = mockServer({
     'GET /staff/orders': { status: 200, data: { data: [] } },
+    'GET /admin/menus': {
+      status: 200,
+      data: { data: [], meta: { current_page: 1, last_page: 1, total: 0 } },
+    },
+    'GET /admin/categories': { status: 200, data: { data: [] } },
     ...extra,
   })
   const client = new QueryClient({
