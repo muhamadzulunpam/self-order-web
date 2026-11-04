@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterEach, beforeEach, vi } from 'vitest'
 import { useAuthStore } from '@/features/auth/store'
 import { useCartStore } from '@/features/cart/store'
@@ -13,7 +13,11 @@ import { resetMockServer } from '@/test/mockServer'
 
 vi.mock('@/lib/realtime', () => ({ getRealtime: vi.fn(() => null) }))
 
+// Layar staf dimuat lazy (code splitting): pemuatan pertama di test bisa lebih lama dari batas bawaan 1 detik.
+configure({ asyncUtilTimeout: 4000 })
+
 window.HTMLElement.prototype.scrollIntoView = () => {}
+window.scrollTo = () => {}
 
 beforeEach(() => {
   vi.mocked(getRealtime).mockReturnValue(null)

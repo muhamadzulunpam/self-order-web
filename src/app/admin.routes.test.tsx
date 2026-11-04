@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -38,17 +38,24 @@ describe('rute panel admin', () => {
     expect(
       await screen.findByRole('heading', { name: 'Panel Admin' }),
     ).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/staff/admin/menus')
 
-    const nav = screen.getByRole('navigation', { name: 'Menu admin' })
-
-    expect(within(nav).getByRole('link', { name: 'Menu' })).toHaveAttribute(
-      'aria-current',
-      'page',
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe('/staff/admin/menus'),
     )
+
+    const nav = await screen.findByRole('navigation', { name: 'Menu admin' })
+
+    await waitFor(() =>
+      expect(within(nav).getByRole('link', { name: 'Menu' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      ),
+    )
+
     expect(
       within(nav).getByRole('link', { name: 'Kategori' }),
     ).not.toHaveAttribute('aria-current')
+
     expect(within(nav).getByRole('link', { name: 'Meja' })).toBeInTheDocument()
   })
 

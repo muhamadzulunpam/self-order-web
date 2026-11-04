@@ -3,3 +3,19 @@
 body {
   @apply bg-stone-50 text-stone-900 antialiased;
 }
+
+/* iOS Safari memperbesar layar saat kolom isian berukuran di bawah 16px.
+   Aturan tanpa layer ini menang atas utilitas Tailwind (text-sm). */
+@media (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio'], [type='file']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none;
+  }
+}
